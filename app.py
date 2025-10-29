@@ -2,16 +2,19 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import gradio as gr
 import torch
 
-# 🧠 Load your model from Hugging Face
+# 🧠 Load your fine-tuned model
 model_name = "UmerZingu/gyaanchand-checkpoint-10750"
 
 print("🔄 Loading Gyaanchand model...")
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+)
 model.eval()
 
+# 💬 Chat function
 def gyaanchand_chat(message, history):
-    # Combine chat history for conversational context
     context = ""
     for user, bot in history:
         context += f"User: {user}\nGyaanchand: {bot}\n"
@@ -35,6 +38,7 @@ def gyaanchand_chat(message, history):
     response = response.split("Gyaanchand:")[-1].strip()
     return response
 
+# 🎨 Gradio UI
 chat_ui = gr.ChatInterface(
     fn=gyaanchand_chat,
     title="🧠 Gyaanchand - AI Assistant",
